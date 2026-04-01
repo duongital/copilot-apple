@@ -73,6 +73,7 @@ const preflight = () => new Response(null, { status: 204, headers: CORS_HEADERS 
 
 // ── Server ───────────────────────────────────────────────────────────────────
 Bun.serve({
+  hostname: "0.0.0.0",
   port: process.env.PORT ? Number(process.env.PORT) : 4001,
 
   fetch(req) {

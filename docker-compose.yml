@@ -1,0 +1,30 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - "4001:4001"
+    environment:
+      - PORT=4001
+      - NODE_ENV=production
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    volumes:
+      - server-data:/app/server
+    restart: unless-stopped
+
+  client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - NODE_ENV=production
+    depends_on:
+      - server
+    restart: unless-stopped
+
+volumes:
+  server-data:

@@ -1,6 +1,7 @@
 import index from "./index.html";
 
 Bun.serve({
+  hostname: "0.0.0.0",
   port: process.env.PORT ? Number(process.env.PORT) : 4000,
   routes: {
     "/": index,

@@ -1,0 +1,14 @@
+node_modules
+server/node_modules
+client/node_modules
+server/.env
+server/sessions.db
+.git
+.gitignore
+.DS_Store
+*.md
+.idea
+.cache
+coverage
+dist
+out
