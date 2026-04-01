@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 
-const API = "http://localhost:4001";
+const API = "";
 
 type Message = { role: "user" | "assistant"; content: string };
 type SessionMeta = { id: string; title: string; created_at: number };

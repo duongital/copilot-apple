@@ -22,6 +22,7 @@ services:
     environment:
       - PORT=4000
       - NODE_ENV=production
+      - API_SERVER=http://server:4001
     depends_on:
       - server
     restart: unless-stopped
