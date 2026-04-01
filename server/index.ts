@@ -78,6 +78,7 @@ Bun.serve({
 
   fetch(req) {
     if (req.method === "OPTIONS") return preflight();
+    return new Response("Not Found", { status: 404, headers: CORS_HEADERS });
   },
 
   routes: {
@@ -120,7 +121,7 @@ Bun.serve({
 
         let body: { prompt?: string };
         try {
-          body = await req.json();
+          body = (await req.json()) as { prompt?: string };
         } catch {
           return json({ error: "Invalid JSON body" }, 400);
         }

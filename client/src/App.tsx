@@ -11,6 +11,7 @@ export default function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -27,6 +28,7 @@ export default function App() {
   async function openSession(id: string) {
     setActiveId(id);
     setInput("");
+    setSidebarOpen(false);
     const res = await fetch(`${API}/sessions/${id}/messages`);
     setMessages(await res.json());
   }
@@ -70,8 +72,14 @@ export default function App() {
 
   return (
     <div className="layout">
+      {/* Sidebar backdrop for mobile */}
+      <div
+        className={`sidebar-backdrop ${sidebarOpen ? "open" : ""}`}
+        onClick={() => setSidebarOpen(false)}
+      />
+
       {/* Sidebar */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <button className="btn btn-new" onClick={newSession}>+ New session</button>
         <div className="session-list">
           {sessions.length === 0 && <p className="empty-sidebar">No sessions yet</p>}
@@ -117,6 +125,7 @@ export default function App() {
         </main>
 
         <footer className="input-bar">
+          <button className="sidebar-toggle" onClick={() => setSidebarOpen(true)}>☰</button>
           <input
             className="input"
             placeholder={activeId ? "Type a message…" : "Select a session first"}
@@ -128,7 +137,7 @@ export default function App() {
           <button className="btn" onClick={send} disabled={!activeId || loading || !input.trim()}>
             Send
           </button>
-        </footer>
+         </footer>
       </div>
     </div>
   );
