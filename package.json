@@ -1,0 +1,15 @@
+{
+  "name": "copilot-apple",
+  "type": "module",
+  "private": true,
+  "workspaces": ["server", "client"],
+  "scripts": {
+    "dev:server": "bun run --cwd server dev",
+    "dev:client": "bun run --cwd client dev",
+    "dev": "bun run dev:server & bun run dev:client"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5"
+  }
+}

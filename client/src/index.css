@@ -1,0 +1,165 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+  height: 100dvh;
+}
+
+/* ── Layout ─────────────────────────────────────────────── */
+.layout {
+  display: flex;
+  height: 100dvh;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: #161b22;
+  border-right: 1px solid #21262d;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 8px;
+  gap: 8px;
+}
+
+.btn-new {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px dashed #30363d;
+  background: transparent;
+  color: #8b949e;
+  font-size: 0.88rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, color 0.15s;
+}
+.btn-new:hover { border-color: #388bfd; color: #e6edf3; }
+
+.session-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.empty-sidebar {
+  font-size: 0.8rem;
+  color: #484f58;
+  padding: 8px 4px;
+}
+
+.session-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.session-item:hover { background: #21262d; }
+.session-item.active { background: #1f2937; }
+
+.session-title {
+  flex: 1;
+  font-size: 0.83rem;
+  color: #c9d1d9;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.btn-delete {
+  background: transparent;
+  border: none;
+  color: #484f58;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.btn-delete:hover { color: #f85149; background: #21262d; }
+
+/* ── Chat area ───────────────────────────────────────────── */
+.chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.empty {
+  margin: auto;
+  color: #484f58;
+  font-size: 0.9rem;
+}
+
+/* ── Bubbles ─────────────────────────────────────────────── */
+.bubble { display: flex; flex-direction: column; gap: 4px; max-width: 75%; }
+.bubble.user { align-self: flex-end; align-items: flex-end; }
+.bubble.assistant { align-self: flex-start; }
+.bubble-label { font-size: 0.72rem; color: #8b949e; }
+.bubble p {
+  padding: 10px 14px;
+  border-radius: 12px;
+  line-height: 1.55;
+  font-size: 0.92rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.bubble.user p    { background: #1f6feb; color: #fff; border-bottom-right-radius: 4px; }
+.bubble.assistant p { background: #21262d; color: #e6edf3; border-bottom-left-radius: 4px; }
+.typing { color: #8b949e !important; font-style: italic; }
+
+/* ── Input bar ───────────────────────────────────────────── */
+.input-bar {
+  display: flex;
+  gap: 8px;
+  padding: 12px 24px;
+  border-top: 1px solid #21262d;
+  background: #0d1117;
+}
+.input {
+  flex: 1;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  color: #e6edf3;
+  padding: 9px 12px;
+  font-size: 0.92rem;
+  outline: none;
+}
+.input:focus { border-color: #388bfd; }
+.input:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #388bfd;
+  background: #1f6feb;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.btn:hover:not(:disabled) { background: #388bfd; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
