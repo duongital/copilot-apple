@@ -8,6 +8,7 @@
     "start": "bun index.ts"
   },
   "dependencies": {
+    "lucide-react": "^1.7.0",
     "react": "^19",
     "react-dom": "^19"
   },

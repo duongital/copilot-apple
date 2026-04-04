@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { Sun, Moon } from "lucide-react";
 
 const API = "";
 
@@ -12,7 +13,18 @@ export default function App() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">(() =>
+    (localStorage.getItem("theme") as "dark" | "light") ?? "dark"
+  );
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  const toggleTheme = () => {
+    setTheme((t) => {
+      const next = t === "dark" ? "light" : "dark";
+      localStorage.setItem("theme", next);
+      return next;
+    });
+  };
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -20,7 +32,7 @@ export default function App() {
 
   const loadSessions = useCallback(async () => {
     const res = await fetch(`${API}/sessions`);
-    setSessions(await res.json());
+    setSessions(await res.json() as SessionMeta[]);
   }, []);
 
   useEffect(() => { loadSessions(); }, [loadSessions]);
@@ -30,12 +42,12 @@ export default function App() {
     setInput("");
     setSidebarOpen(false);
     const res = await fetch(`${API}/sessions/${id}/messages`);
-    setMessages(await res.json());
+    setMessages(await res.json() as Message[]);
   }
 
   async function newSession() {
     const res = await fetch(`${API}/sessions`, { method: "POST" });
-    const data = await res.json();
+    const data = await res.json() as { sessionId: string };
     await loadSessions();
     await openSession(data.sessionId);
   }
@@ -59,8 +71,8 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt }),
       });
-      const data = await res.json();
-      setMessages((m) => [...m, { role: "assistant", content: data.content ?? data.error }]);
+      const data = await res.json() as { content?: string; error?: string };
+      setMessages((m) => [...m, { role: "assistant", content: data.content ?? data.error ?? "" }]);
       // Refresh sidebar so title updates after first message
       loadSessions();
     } catch (e) {
@@ -71,7 +83,7 @@ export default function App() {
   }
 
   return (
-    <div className="layout">
+    <div className={`layout${theme === "light" ? " light" : ""}`}>
       {/* Sidebar backdrop for mobile */}
       <div
         className={`sidebar-backdrop ${sidebarOpen ? "open" : ""}`}
@@ -98,6 +110,10 @@ export default function App() {
             </div>
           ))}
         </div>
+        <button className="theme-toggle" onClick={toggleTheme} title="Toggle theme">
+          {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+          {theme === "dark" ? "Light mode" : "Dark mode"}
+        </button>
       </aside>
 
       {/* Main chat */}
