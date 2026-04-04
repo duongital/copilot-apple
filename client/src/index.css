@@ -19,6 +19,8 @@ html { font-size: 16px; }
   --bubble-user-bg: #1f6feb;
   --bubble-assist-bg: #21262d;
   --bubble-assist-text: #e6edf3;
+  --danger:       #da3633;
+  --danger-hover: #f85149;
 }
 
 .light {
@@ -37,6 +39,8 @@ html { font-size: 16px; }
   --bubble-user-bg: #0969da;
   --bubble-assist-bg: #eaeef2;
   --bubble-assist-text: #1f2328;
+  --danger:       #cf222e;
+  --danger-hover: #a40e26;
 }
 
 body {
@@ -48,10 +52,52 @@ body {
   transition: background 0.2s, color 0.2s;
 }
 
+/* ── App shell ───────────────────────────────────────────── */
+.app-root {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+}
+
+/* ── Top nav ─────────────────────────────────────────────── */
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 48px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-sidebar);
+  flex-shrink: 0;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.nav-tab {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.nav-tab:hover { background: var(--bg-surface); color: var(--text); }
+.nav-tab.active { background: var(--bg-active); color: var(--text); }
+
 /* ── Layout ─────────────────────────────────────────────── */
 .layout {
   display: flex;
-  height: 100dvh;
+  flex: 1;
+  overflow: hidden;
+}
+.layout.agents-mode {
+  overflow-y: auto;
 }
 
 /* ── Sidebar ─────────────────────────────────────────────── */
@@ -106,12 +152,27 @@ body {
 .session-item:hover { background: var(--bg-surface); }
 .session-item.active { background: var(--bg-active); }
 
-.session-title {
+.session-item-text {
   flex: 1;
-  font-size: 1rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.session-title {
+  font-size: 0.9375rem;
   color: var(--text-session);
   overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.session-agent-tag {
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+  white-space: nowrap;
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 
@@ -133,14 +194,13 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 10px;
+  padding: 6px 8px;
   border-radius: 8px;
   border: 1px solid var(--border-muted);
   background: transparent;
   color: var(--text-muted);
   font-size: 0.875rem;
   cursor: pointer;
-  width: 100%;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .theme-toggle:hover { background: var(--bg-surface); color: var(--text); border-color: var(--accent-hover); }
@@ -153,6 +213,35 @@ body {
   flex-direction: column;
   overflow: hidden;
   background: var(--bg);
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-sidebar);
+  min-height: 44px;
+  flex-shrink: 0;
+}
+
+.chat-agent-badge {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent-hover);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.chat-header-title {
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .messages {
@@ -225,6 +314,24 @@ body {
 .btn:hover:not(:disabled) { background: var(--accent-hover); }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
+.btn-ghost {
+  background: transparent;
+  border-color: var(--border-muted);
+  color: var(--text-muted);
+}
+.btn-ghost:hover:not(:disabled) { background: var(--bg-surface); color: var(--text); }
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 0.875rem;
+}
+
+.btn-danger {
+  background: var(--danger);
+  border-color: var(--danger);
+}
+.btn-danger:hover:not(:disabled) { background: var(--danger-hover); border-color: var(--danger-hover); }
+
 /* ── Sidebar toggle (mobile) ────────────────────────────── */
 .sidebar-toggle {
   display: none;
@@ -236,11 +343,165 @@ body {
   border-radius: 6px;
   cursor: pointer;
   line-height: 1;
+  flex-shrink: 0;
 }
 .sidebar-toggle:hover { background: var(--bg-surface); }
 
-.sidebar-backdrop {
-  display: none;
+.sidebar-backdrop { display: none; }
+
+/* ── Modal ───────────────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal {
+  background: var(--bg-sidebar);
+  border: 1px solid var(--border-muted);
+  border-radius: 12px;
+  padding: 24px;
+  width: 340px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* ── Agents tab ──────────────────────────────────────────── */
+.agents-tab {
+  flex: 1;
+  padding: 28px 32px;
+  max-width: 760px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.agents-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.agents-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.agent-form {
+  background: var(--bg-sidebar);
+  border: 1px solid var(--border-muted);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.agent-form-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.field-label {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.textarea {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-muted);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 9px 12px;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.15s;
+}
+.textarea:focus { border-color: var(--accent-hover); }
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.agent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.agent-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--bg-sidebar);
+  border: 1px solid var(--border-muted);
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: border-color 0.15s;
+}
+.agent-card:hover { border-color: var(--accent); }
+
+.agent-card-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.agent-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.agent-card-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.agent-card-model {
+  font-size: 0.75rem;
+  color: var(--accent-hover);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  padding: 1px 7px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.agent-card-prompt {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.agent-card-prompt.muted { color: var(--text-subtle); font-style: italic; }
+
+.agent-card-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 /* ── Mobile ──────────────────────────────────────────────── */
@@ -249,39 +510,28 @@ body {
     position: fixed;
     inset-block: 0;
     left: 0;
+    top: 48px;
     z-index: 20;
     transform: translateX(-100%);
     transition: transform 0.25s ease;
   }
-  .sidebar.open {
-    transform: translateX(0);
-  }
+  .sidebar.open { transform: translateX(0); }
 
   .sidebar-backdrop {
     display: none;
     position: fixed;
     inset: 0;
+    top: 48px;
     z-index: 10;
     background: rgba(0, 0, 0, 0.5);
   }
-  .sidebar-backdrop.open {
-    display: block;
-  }
+  .sidebar-backdrop.open { display: block; }
 
-  .sidebar-toggle {
-    display: block;
-    flex-shrink: 0;
-  }
+  .sidebar-toggle { display: block; }
 
-  .messages {
-    padding: 16px 12px;
-  }
+  .messages { padding: 16px 12px; }
+  .input-bar { padding: 10px 12px; }
+  .bubble { max-width: 90%; }
 
-  .input-bar {
-    padding: 10px 12px;
-  }
-
-  .bubble {
-    max-width: 90%;
-  }
+  .agents-tab { padding: 16px; }
 }
