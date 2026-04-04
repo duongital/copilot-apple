@@ -21,18 +21,35 @@ Browser (localhost:4000)
 
 ```
 copilot-apple/
-├── package.json          # Bun workspace root
+├── package.json              # Bun workspace root
 ├── server/
-│   ├── index.ts          # REST API + Copilot client
-│   ├── sessions.db       # SQLite — persisted sessions & messages
-│   └── .env              # GITHUB_TOKEN, PORT
+│   ├── index.ts              # Entry point — Bun.serve + route wiring
+│   ├── db.ts                 # Database init, migrations, prepared statements
+│   ├── helpers.ts            # CORS headers, json(), preflight, randomId()
+│   ├── copilot.ts            # CopilotClient boot + in-memory session Map
+│   ├── routes/
+│   │   ├── models.ts         # GET /models
+│   │   ├── agents.ts         # CRUD /agents, /agents/:id
+│   │   └── sessions.ts       # CRUD /sessions, chat & messages
+│   ├── sessions.db           # SQLite — persisted sessions & messages
+│   └── .env                  # GITHUB_TOKEN, PORT
 └── client/
-    ├── index.ts          # Bun static server
+    ├── index.ts              # Bun static server
     ├── index.html
     └── src/
         ├── main.tsx
-        ├── App.tsx       # Chat UI with session sidebar
-        └── index.css
+        ├── App.tsx           # Root layout — chat tab + agents tab
+        ├── types.ts          # Shared TypeScript types
+        ├── index.css
+        └── components/
+            ├── SessionSidebar.tsx
+            ├── ChatTab.tsx
+            ├── ChatMessages.tsx
+            ├── ChatInputBar.tsx
+            ├── AgentsTab.tsx
+            ├── AgentCard.tsx
+            ├── AgentForm.tsx
+            └── AgentPickerModal.tsx
 ```
 
 ## Getting started

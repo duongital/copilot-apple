@@ -18,7 +18,16 @@ There are no tests or linters configured.
 Bun monorepo with two workspaces:
 
 - **`server/`** — REST API (`Bun.serve`) that manages a single long-lived `CopilotClient` subprocess. All chat sessions share this one subprocess via JSON-RPC over stdio. Sessions and messages are persisted to SQLite (`sessions.db` via `bun:sqlite`). On boot, all persisted sessions are resumed automatically.
+  - `db.ts` — database init, migrations, all prepared statements
+  - `helpers.ts` — `CORS_HEADERS`, `json()`, `preflight`, `randomId()`
+  - `copilot.ts` — `CopilotClient` boot + in-memory `sessions` Map
+  - `routes/models.ts` — `GET /models`
+  - `routes/agents.ts` — CRUD for `/agents` and `/agents/:id`
+  - `routes/sessions.ts` — CRUD for `/sessions`, chat, and messages
 - **`client/`** — Bun static file server that serves a React 19 SPA. Bun bundles `.tsx` files directly — no separate build step.
+  - `src/App.tsx` — root layout with chat tab and agents tab
+  - `src/types.ts` — shared TypeScript types
+  - `src/components/` — `SessionSidebar`, `ChatTab`, `ChatMessages`, `ChatInputBar`, `AgentsTab`, `AgentCard`, `AgentForm`, `AgentPickerModal`
 
 Data flow: `Browser → REST API (server/) → CopilotClient subprocess → GitHub Copilot API`
 
@@ -28,7 +37,7 @@ Data flow: `Browser → REST API (server/) → CopilotClient subprocess → GitH
 - **Route-based API** — server endpoints are declared in the `routes: {}` object of `Bun.serve()`, not middleware chains.
 - **Prepared statements** — all SQLite queries use `db.prepare()` at module level, not inline SQL strings.
 - **CORS** — manual `CORS_HEADERS` object applied to every response and preflight handler. No CORS library.
-- **Single entry files** — each workspace has one `index.ts` entry point. Server logic, DB schema, and API routes all live in `server/index.ts`.
+- **Single entry point** — each workspace has one `index.ts` entry point. Server routes are split across `server/routes/`, DB logic lives in `server/db.ts`, and Copilot boot in `server/copilot.ts`.
 - **Hot reload** — dev scripts use `bun --hot` for live reloading.
 - **TypeScript strict mode** — `strict: true` with `noUncheckedIndexedAccess` and `noImplicitOverride` enabled.
 - **API URL** — the client hardcodes `http://localhost:4001` as the API base in `client/src/App.tsx`.

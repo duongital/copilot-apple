@@ -1,7 +1,7 @@
 import index from "./index.html";
 
 const API_SERVER = process.env.API_SERVER ?? "http://localhost:4001";
-const API_PATHS = ["/sessions", "/health"];
+const API_PATHS = ["/sessions", "/agents", "/models", "/health"];
 
 Bun.serve({
   hostname: "0.0.0.0",
