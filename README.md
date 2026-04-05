@@ -2,6 +2,17 @@
 
 A self-hosted GitHub Copilot chat service with a persistent REST API backend and a React web client. One shared Copilot CLI subprocess handles all conversations, keeping RAM usage low.
 
+<img width="1181" height="899" alt="image" src="https://github.com/user-attachments/assets/ee11a7da-9f80-4833-9b9c-bc6d9ffe368a" />
+
+## TODO
+
+- [ ] build Agent has system prompt and LLM model, now build: tools, memory, MCP
+- [ ] thinking -> show tools, what agent doing...
+- [ ] format code in chat response
+- [ ] db should use seed/migrate, separate service like PocketBase -> restart or build Docker will not lose prev data
+- [ ] A2A agent to agent communication, or build a agent manager
+- [ ] refer to claw-banana to have Telegram Chatbot
+
 ## Architecture
 
 ### Development (`bun run dev`)
@@ -114,14 +125,14 @@ bun run dev:client   # UI  on http://localhost:4002
 
 ## REST API
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/sessions` | List all sessions |
-| `POST` | `/sessions` | Create a new session |
-| `GET` | `/sessions/:id/messages` | Full message history for a session |
-| `POST` | `/sessions/:id/chat` | `{ "prompt": "..." }` → `{ "content": "..." }` |
-| `DELETE` | `/sessions/:id` | Abort and delete a session |
-| `GET` | `/health` | Server status + active session count |
+| Method   | Endpoint                 | Description                                    |
+| -------- | ------------------------ | ---------------------------------------------- |
+| `GET`    | `/sessions`              | List all sessions                              |
+| `POST`   | `/sessions`              | Create a new session                           |
+| `GET`    | `/sessions/:id/messages` | Full message history for a session             |
+| `POST`   | `/sessions/:id/chat`     | `{ "prompt": "..." }` → `{ "content": "..." }` |
+| `DELETE` | `/sessions/:id`          | Abort and delete a session                     |
+| `GET`    | `/health`                | Server status + active session count           |
 
 ## Deployment (Docker / Raspberry Pi)
 
@@ -136,11 +147,10 @@ docker compose up -d --build
 
 Services started by Docker Compose:
 
-| Container | Internal port | Role |
-|-----------|--------------|------|
-| `nginx`   | 4000 (host)  | Reverse proxy — entry point |
-| `client`  | 4002         | Bun static SPA server |
-| `server`  | 4001         | REST API + Copilot subprocess |
+| Container | Internal port | Role                          |
+| --------- | ------------- | ----------------------------- |
+| `nginx`   | 4000 (host)   | Reverse proxy — entry point   |
+| `client`  | 4002          | Bun static SPA server         |
+| `server`  | 4001          | REST API + Copilot subprocess |
 
 SQLite data is persisted in a named Docker volume (`server-data`).
-
