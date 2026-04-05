@@ -71,6 +71,21 @@ body {
   flex-shrink: 0;
 }
 
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  flex-shrink: 0;
+}
+
+.nav-brand {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
 .nav-tabs {
   display: flex;
   gap: 4px;
