@@ -4,17 +4,38 @@ A self-hosted GitHub Copilot chat service with a persistent REST API backend and
 
 ## Architecture
 
+### Development (`bun run dev`)
+
 ```
-Browser (localhost:4000)
-        │  HTTP REST
+Browser (localhost:4002)
+        │  HTTP REST  (API_BASE = http://localhost:4001)
         ▼
-  Bun server — server/  (localhost:4001)
+  Bun client — client/  (localhost:4002)   static SPA
+  Bun server — server/  (localhost:4001)   REST API
         │  JSON-RPC stdio
         ▼
   Copilot CLI subprocess  ← started once, shared forever
         │  HTTPS
         ▼
   GitHub Copilot API
+```
+
+### Production (`docker compose up`)
+
+```
+Browser (host:4000)
+        │
+        ▼
+   nginx  (port 4000 → 80)
+     │  location /sessions, /agents, /models, /health
+     │─────────────────────────────► server container (port 4001)
+     │                                      │  JSON-RPC stdio
+     │  location /                          ▼
+     └────────────────────────────► client container (port 4002)
+                                    Copilot CLI subprocess
+                                           │  HTTPS
+                                           ▼
+                                    GitHub Copilot API
 ```
 
 ## Project structure
@@ -79,7 +100,7 @@ Or run separately:
 
 ```bash
 bun run dev:server   # API on http://localhost:4001
-bun run dev:client   # UI  on http://localhost:4000
+bun run dev:client   # UI  on http://localhost:4002
 ```
 
 ## Features
@@ -102,14 +123,24 @@ bun run dev:client   # UI  on http://localhost:4000
 | `DELETE` | `/sessions/:id` | Abort and delete a session |
 | `GET` | `/health` | Server status + active session count |
 
-## Deployment (AWS EC2)
-
-Recommended instance: **t3.large** (2 vCPU, 8 GB RAM).
-
-The Copilot CLI subprocess uses ~500 MB at idle and up to ~1 GB during active sessions. A `t3.large` comfortably handles several concurrent conversations.
+## Deployment (Docker / Raspberry Pi)
 
 ```bash
-# On the server
-bun run start:server
+# Set your token
+echo "GITHUB_TOKEN=your_token_here" > .env
+
+# Build and start all services
+docker compose up -d --build
+# App is available at http://<host>:4000
 ```
+
+Services started by Docker Compose:
+
+| Container | Internal port | Role |
+|-----------|--------------|------|
+| `nginx`   | 4000 (host)  | Reverse proxy — entry point |
+| `client`  | 4002         | Bun static SPA server |
+| `server`  | 4001         | REST API + Copilot subprocess |
+
+SQLite data is persisted in a named Docker volume (`server-data`).
 
