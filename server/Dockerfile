@@ -1,22 +1,26 @@
-FROM oven/bun:1 AS base
+FROM oven/bun:1
+
 WORKDIR /app
 
-# Install Node.js (required by @github/copilot-sdk CLI subprocess)
-RUN apt-get update && apt-get install -y curl \
-    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-    && apt-get install -y nodejs \
-    && rm -rf /var/lib/apt/lists/*
+# @github/copilot-sdk spawns a Node.js CLI subprocess that requires node:sqlite (Node.js 22.5+)
+RUN apt-get update \
+  && apt-get install -y curl ca-certificates \
+  && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+  && apt-get install -y nodejs \
+  && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies
-COPY package.json bun.lock tsconfig.json ./
-COPY server/package.json server/
-COPY client/package.json client/
-RUN bun install --frozen-lockfile
+COPY package.json bun.lock ./
+COPY server/package.json ./server/
+COPY client/package.json ./client/
 
-# Copy server source
-COPY server/ server/
+RUN bun install --filter @copilot-apple/server
+
+COPY server/ ./server/
 
 WORKDIR /app/server
+
+ENV NODE_ENV=production
+
 EXPOSE 4001
 
-CMD ["bun", "start"]
+CMD ["bun", "index.ts"]

@@ -1,6 +1,6 @@
 import { Database } from "bun:sqlite";
 
-export const db = new Database("sessions.db", { create: true });
+export const db = new Database(process.env.DB_PATH ?? "sessions.db", { create: true });
 
 db.run(`
   CREATE TABLE IF NOT EXISTS agents (
