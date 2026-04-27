@@ -18,6 +18,7 @@ export const sessionsRoutes = {
     try {
       const session = await client.createSession({
         model: agent.model,
+        streaming: true,
         onPermissionRequest: approveAll,
         ...(agent.system_prompt ? { systemMessage: { mode: "append" as const, content: agent.system_prompt } } : {}),
       });
@@ -48,21 +49,60 @@ export const sessionChatRoutes = {
     }
     if (!body.prompt) return json({ error: "Missing 'prompt' field" }, 400);
 
-    try {
-      insertMessage.run(req.params.id, "user", body.prompt);
+    const sessionId = req.params.id;
+    const prompt = body.prompt;
 
-      const msgCount = (queryMessages.all(req.params.id) as unknown[]).length;
-      if (msgCount === 1) {
-        updateTitle.run(body.prompt.slice(0, 60), req.params.id);
-      }
-
-      const response = await session.sendAndWait({ prompt: body.prompt });
-      const content = response?.data.content ?? "";
-      insertMessage.run(req.params.id, "assistant", content);
-      return json({ content });
-    } catch (err) {
-      return json({ error: String(err) }, 500);
+    insertMessage.run(sessionId, "user", prompt);
+    const msgCount = (queryMessages.all(sessionId) as unknown[]).length;
+    if (msgCount === 1) {
+      updateTitle.run(prompt.slice(0, 60), sessionId);
     }
+
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        const send = (data: object) =>
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+
+        let fullContent = "";
+
+        const unsubscribe = session.on((event) => {
+          if (event.type === "assistant.message_delta") {
+            fullContent += event.data.deltaContent;
+            send({ delta: event.data.deltaContent });
+          } else if (event.type === "assistant.message") {
+            // Capture final authoritative content for DB storage
+            fullContent = event.data.content;
+          } else if (event.type === "session.idle") {
+            insertMessage.run(sessionId, "assistant", fullContent);
+            send({ done: true, content: fullContent });
+            controller.close();
+            unsubscribe();
+          } else if (event.type === "session.error") {
+            send({ error: event.data.message });
+            controller.close();
+            unsubscribe();
+          }
+        });
+
+        try {
+          await session.send({ prompt });
+        } catch (err) {
+          send({ error: String(err) });
+          controller.close();
+          unsubscribe();
+        }
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        ...CORS_HEADERS,
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+      },
+    });
   },
   OPTIONS: preflight,
 };

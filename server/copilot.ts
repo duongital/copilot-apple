@@ -20,6 +20,7 @@ for (const { id, agent_id } of storedSessions) {
     const session = await client.resumeSession(id, {
       onPermissionRequest: approveAll,
       model,
+      streaming: true,
       ...(systemPrompt ? { systemMessage: { mode: "append" as const, content: systemPrompt } } : {}),
     });
     sessions.set(session.sessionId, session);
