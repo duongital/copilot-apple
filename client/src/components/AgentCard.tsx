@@ -3,15 +3,15 @@ import type { AgentMeta, ModelOption } from "../types";
 type AgentCardProps = {
   agent: AgentMeta;
   models: ModelOption[];
-  onEdit: (agent: AgentMeta) => void;
+  onClick: () => void;
   onDelete: (id: string) => void;
 };
 
-export function AgentCard({ agent, models, onEdit, onDelete }: AgentCardProps) {
+export function AgentCard({ agent, models, onClick, onDelete }: AgentCardProps) {
   const modelLabel = (id: string) => models.find((m) => m.id === id)?.name ?? id;
 
   return (
-    <div className="agent-card">
+    <div className="agent-card" onClick={onClick} style={{ cursor: "pointer" }}>
       <div className="agent-card-body">
         <div className="agent-card-header">
           <span className="agent-card-name">{agent.name}</span>
@@ -24,9 +24,16 @@ export function AgentCard({ agent, models, onEdit, onDelete }: AgentCardProps) {
         )}
       </div>
       <div className="agent-card-actions">
-        <button className="btn btn-sm" onClick={() => onEdit(agent)}>Edit</button>
+        <button className="btn btn-sm" onClick={(e) => { e.stopPropagation(); onClick(); }}>
+          View
+        </button>
         {agent.id !== "general" && (
-          <button className="btn btn-sm btn-danger" onClick={() => onDelete(agent.id)}>Delete</button>
+          <button
+            className="btn btn-sm btn-danger"
+            onClick={(e) => { e.stopPropagation(); onDelete(agent.id); }}
+          >
+            Delete
+          </button>
         )}
       </div>
     </div>

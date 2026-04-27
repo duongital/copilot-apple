@@ -2,6 +2,7 @@ import "./db";
 import { sessions } from "./copilot";
 import { CORS_HEADERS, json, preflight } from "./helpers";
 import { modelsRoutes } from "./routes/models";
+import { toolsRoutes } from "./routes/tools";
 import { agentByIdRoutes, agentsRoutes } from "./routes/agents";
 import { sessionByIdRoutes, sessionChatRoutes, sessionMessagesRoutes, sessionsRoutes } from "./routes/sessions";
 
@@ -16,6 +17,7 @@ Bun.serve({
 
   routes: {
     "/models": modelsRoutes,
+    "/tools": toolsRoutes,
     "/agents": agentsRoutes,
     "/agents/:id": agentByIdRoutes,
     "/sessions": sessionsRoutes,

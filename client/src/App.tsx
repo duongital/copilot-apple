@@ -1,13 +1,15 @@
 import { useState } from "react";
+import { Routes, Route, NavLink, useNavigate, Navigate } from "react-router-dom";
 import { Sun, Moon } from "lucide-react";
 import { ChatTab } from "./components/ChatTab";
 import { AgentsTab } from "./components/AgentsTab";
+import { AgentDetailPage } from "./components/AgentDetailPage";
 
 export default function App() {
-  const [tab, setTab] = useState<"chat" | "agents">("chat");
   const [theme, setTheme] = useState<"dark" | "light">(() =>
     (localStorage.getItem("theme") as "dark" | "light") ?? "dark"
   );
+  const navigate = useNavigate();
 
   const toggleTheme = () => {
     setTheme((t) => {
@@ -20,7 +22,12 @@ export default function App() {
   return (
     <div className={`app-root${theme === "light" ? " light" : ""}`}>
       <nav className="top-nav">
-        <div className="nav-logo" aria-label="Copilot Apple">
+        <div
+          className="nav-logo"
+          aria-label="Copilot Apple"
+          onClick={() => navigate("/")}
+          style={{ cursor: "pointer" }}
+        >
           <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
             {/* Leaf */}
             <path d="M14 5 C14 5 15 2 18 2" stroke="#4caf50" strokeWidth="1.5" strokeLinecap="round" fill="none" />
@@ -40,23 +47,31 @@ export default function App() {
           <span className="nav-brand">Copilot Apple</span>
         </div>
         <div className="nav-tabs">
-          <button
-            className={`nav-tab ${tab === "chat" ? "active" : ""}`}
-            onClick={() => setTab("chat")}
-          >Chat</button>
-          <button
-            className={`nav-tab ${tab === "agents" ? "active" : ""}`}
-            onClick={() => setTab("agents")}
-          >Agents</button>
+          <NavLink
+            to="/"
+            end
+            className={({ isActive }) => `nav-tab${isActive ? " active" : ""}`}
+          >
+            Chat
+          </NavLink>
+          <NavLink
+            to="/agents"
+            className={({ isActive }) => `nav-tab${isActive ? " active" : ""}`}
+          >
+            Agents
+          </NavLink>
         </div>
         <button className="theme-toggle" onClick={toggleTheme} title="Toggle theme">
           {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
         </button>
       </nav>
 
-      <div className={`layout${tab === "agents" ? " agents-mode" : ""}`}>
-        {tab === "chat" ? <ChatTab /> : <AgentsTab />}
-      </div>
+      <Routes>
+        <Route path="/" element={<div className="layout"><ChatTab /></div>} />
+        <Route path="/agents" element={<div className="layout agents-mode"><AgentsTab /></div>} />
+        <Route path="/agents/:id" element={<div className="layout agents-mode"><AgentDetailPage /></div>} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </div>
   );
 }

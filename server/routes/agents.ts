@@ -21,6 +21,12 @@ export const agentsRoutes = {
 };
 
 export const agentByIdRoutes = {
+  GET: (req: Request & { params: { id: string } }) => {
+    const agent = queryAgentById.get(req.params.id) as { id: string; name: string; system_prompt: string; model: string } | null;
+    if (!agent) return json({ error: "Agent not found" }, 404);
+    return json(agent);
+  },
+
   PUT: async (req: Request & { params: { id: string } }) => {
     let body: { name?: string; system_prompt?: string; model?: string };
     try { body = (await req.json()) as typeof body; } catch {

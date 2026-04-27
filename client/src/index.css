@@ -103,6 +103,9 @@ body {
   font-weight: 500;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
 }
 .nav-tab:hover { background: var(--bg-surface); color: var(--text); }
 .nav-tab.active { background: var(--bg-active); color: var(--text); }
@@ -519,6 +522,108 @@ body {
   display: flex;
   gap: 6px;
   flex-shrink: 0;
+}
+
+/* ── Agent Detail ───────────────────────────────────────── */
+.agent-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 8px 0;
+}
+
+.agent-detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.agent-detail-prompt {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── Tools List ─────────────────────────────────────────── */
+.tools-count-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent-hover);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  padding: 1px 6px;
+  border-radius: 20px;
+  margin-left: 2px;
+}
+
+.tools-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tool-item {
+  border: 1px solid var(--border-muted);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-sidebar);
+  transition: border-color 0.15s;
+}
+.tool-item:hover { border-color: var(--accent); }
+
+.tool-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  color: var(--text);
+  font-size: 0.875rem;
+  font-family: inherit;
+  text-align: left;
+  gap: 8px;
+}
+.tool-item-header:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+
+.tool-item-name {
+  font-weight: 500;
+  font-family: "SF Mono", ui-monospace, monospace;
+  font-size: 0.8125rem;
+  color: var(--accent-hover);
+  flex: 1;
+}
+
+.tool-item-body {
+  padding: 0 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--border-muted);
+}
+
+.tool-item-desc {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin: 8px 0 0;
+  line-height: 1.5;
+}
+
+.tool-item-instructions {
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+  margin: 0;
+  line-height: 1.5;
+  font-style: italic;
 }
 
 /* ── Mobile ──────────────────────────────────────────────── */
