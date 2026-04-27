@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Wrench, ChevronDown, ChevronRight } from "lucide-react";
 import { API } from "../types";
 import type { AgentMeta, ModelOption } from "../types";
-import { AgentForm } from "./AgentForm";
+import { AgentForm } from "../components/AgentForm";
 
 type ToolInfo = {
   name: string;
@@ -13,7 +13,7 @@ type ToolInfo = {
   instructions?: string;
 };
 
-export function AgentDetailPage() {
+export function AgentDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -124,7 +124,10 @@ export function AgentDetailPage() {
           models={models}
           editing={agent}
           onSave={saveEdit}
-          onCancel={() => { setEditing(false); setForm({ name: agent.name, system_prompt: agent.system_prompt, model: agent.model }); }}
+          onCancel={() => {
+            setEditing(false);
+            setForm({ name: agent.name, system_prompt: agent.system_prompt, model: agent.model });
+          }}
           onChange={setForm}
         />
       ) : (

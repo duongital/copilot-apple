@@ -1,12 +1,12 @@
 import { useState, useCallback, useEffect } from "react";
 import { API } from "../types";
 import type { Message, SessionMeta, AgentMeta } from "../types";
-import { AgentPickerModal } from "./AgentPickerModal";
-import { SessionSidebar } from "./SessionSidebar";
-import { ChatMessages } from "./ChatMessages";
-import { ChatInputBar } from "./ChatInputBar";
+import { AgentPickerModal } from "../components/AgentPickerModal";
+import { SessionSidebar } from "../components/SessionSidebar";
+import { ChatMessages } from "../components/ChatMessages";
+import { ChatInputBar } from "../components/ChatInputBar";
 
-export function ChatTab() {
+export function Home() {
   const [sessions, setSessions] = useState<SessionMeta[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeMeta, setActiveMeta] = useState<SessionMeta | null>(null);
@@ -107,30 +107,25 @@ export function ChatTab() {
           try { event = JSON.parse(jsonStr); } catch { continue; }
 
           if (event.delta !== undefined) {
-            // Append delta to the last (assistant) message
             setMessages((m) => {
               const updated = [...m];
-              updated[updated.length - 1] = {
-                ...updated[updated.length - 1],
-                content: updated[updated.length - 1].content + event.delta,
-              };
+              const last = updated[updated.length - 1]!;
+              updated[updated.length - 1] = { role: last.role, content: last.content + (event.delta ?? "") };
               return updated;
             });
           } else if (event.done) {
-            // Replace with authoritative full content from server
             setMessages((m) => {
               const updated = [...m];
-              updated[updated.length - 1] = {
-                ...updated[updated.length - 1],
-                content: event.content ?? updated[updated.length - 1].content,
-              };
+              const last = updated[updated.length - 1]!;
+              updated[updated.length - 1] = { role: last.role, content: event.content ?? last.content };
               return updated;
             });
             loadSessions();
           } else if (event.error) {
             setMessages((m) => {
               const updated = [...m];
-              updated[updated.length - 1] = { ...updated[updated.length - 1], content: `Error: ${event.error}` };
+              const last = updated[updated.length - 1]!;
+              updated[updated.length - 1] = { role: last.role, content: `Error: ${event.error}` };
               return updated;
             });
           }
@@ -139,7 +134,8 @@ export function ChatTab() {
     } catch (e) {
       setMessages((m) => {
         const updated = [...m];
-        updated[updated.length - 1] = { ...updated[updated.length - 1], content: `Error: ${e}` };
+        const last = updated[updated.length - 1]!;
+        updated[updated.length - 1] = { role: last.role, content: `Error: ${e}` };
         return updated;
       });
     } finally {

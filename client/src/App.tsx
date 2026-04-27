@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Routes, Route, NavLink, useNavigate, Navigate } from "react-router-dom";
 import { Sun, Moon } from "lucide-react";
-import { ChatTab } from "./components/ChatTab";
-import { AgentsTab } from "./components/AgentsTab";
-import { AgentDetailPage } from "./components/AgentDetailPage";
-import { ApiPage } from "./components/ApiPage";
+import { Home } from "./pages/Home";
+import { Agents } from "./pages/Agents";
+import { AgentDetail } from "./pages/AgentDetail";
+import { API } from "./pages/API";
 
 export default function App() {
   const [theme, setTheme] = useState<"dark" | "light">(() =>
@@ -74,10 +74,10 @@ export default function App() {
       </nav>
 
       <Routes>
-        <Route path="/" element={<div className="layout"><ChatTab /></div>} />
-        <Route path="/agents" element={<div className="layout agents-mode"><AgentsTab /></div>} />
-        <Route path="/agents/:id" element={<div className="layout agents-mode"><AgentDetailPage /></div>} />
-        <Route path="/api" element={<div className="layout agents-mode"><ApiPage /></div>} />
+        <Route path="/" element={<div className="layout"><Home /></div>} />
+        <Route path="/agents" element={<div className="layout agents-mode"><Agents /></div>} />
+        <Route path="/agents/:id" element={<div className="layout agents-mode"><AgentDetail /></div>} />
+        <Route path="/api" element={<div className="layout agents-mode"><API /></div>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>

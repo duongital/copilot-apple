@@ -2,10 +2,10 @@ import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../types";
 import type { AgentMeta, ModelOption } from "../types";
-import { AgentForm } from "./AgentForm";
-import { AgentCard } from "./AgentCard";
+import { AgentForm } from "../components/AgentForm";
+import { AgentCard } from "../components/AgentCard";
 
-export function AgentsTab() {
+export function Agents() {
   const navigate = useNavigate();
   const [agents, setAgents] = useState<AgentMeta[]>([]);
   const [models, setModels] = useState<ModelOption[]>([]);
