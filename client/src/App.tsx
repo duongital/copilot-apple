@@ -4,6 +4,7 @@ import { Sun, Moon } from "lucide-react";
 import { ChatTab } from "./components/ChatTab";
 import { AgentsTab } from "./components/AgentsTab";
 import { AgentDetailPage } from "./components/AgentDetailPage";
+import { ApiPage } from "./components/ApiPage";
 
 export default function App() {
   const [theme, setTheme] = useState<"dark" | "light">(() =>
@@ -60,6 +61,12 @@ export default function App() {
           >
             Agents
           </NavLink>
+          <NavLink
+            to="/api"
+            className={({ isActive }) => `nav-tab${isActive ? " active" : ""}`}
+          >
+            API
+          </NavLink>
         </div>
         <button className="theme-toggle" onClick={toggleTheme} title="Toggle theme">
           {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
@@ -70,6 +77,7 @@ export default function App() {
         <Route path="/" element={<div className="layout"><ChatTab /></div>} />
         <Route path="/agents" element={<div className="layout agents-mode"><AgentsTab /></div>} />
         <Route path="/agents/:id" element={<div className="layout agents-mode"><AgentDetailPage /></div>} />
+        <Route path="/api" element={<div className="layout agents-mode"><ApiPage /></div>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
